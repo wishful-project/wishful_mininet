@@ -11,7 +11,7 @@ from mininet.link import TCLink
 from mininet.cli import CLI
 from mininet.log import setLogLevel
 
-from wishful_mn_wrapper import WishfulNode, WishfulAgent, WishfulController
+from wishful_mininet import WishfulNode, WishfulAgent, WishfulController
 
 __author__ = "Zubow"
 __copyright__ = "Copyright (c) 2016, Technische Universität Berlin"
@@ -42,8 +42,11 @@ def topology():
     ap1.start( [c1] )
     ap2.start( [c1] )
 
+    ap1.cmd('ifconfig ap1-eth1 20.0.0.2/8')
+    ap2.cmd('ifconfig ap2-eth1 20.0.0.3/8')
+
     print "*** Starting Wishful framework"
-    folder = './examples/mininet_ex/'
+    folder = './'
 
     print "*** ... agents ..."
     agent1 = WishfulAgent(ap1, folder + 'wishful_simple_agent', folder + 'agent_config_1.yaml')
@@ -58,14 +61,14 @@ def topology():
     print "*** Starting network"
 
     """uncomment to plot graph"""
-    #net.plotGraph(max_x=100, max_y=100)
+    net.plotGraph(max_x=100, max_y=100)
 
-    #net.startMobility(startTime=0)
-    #net.mobility('sta1', 'start', time=1, position='10,45,0')
-    #net.mobility('sta2', 'start', time=2, position='10,40,0')
-    #net.mobility('sta1', 'stop', time=12, position='15,10,0')
-    #net.mobility('sta2', 'stop', time=22, position='25,25,0')
-    #net.stopMobility(stopTime=23)
+    net.startMobility(startTime=0)
+    net.mobility('sta1', 'start', time=0, position='10,45,0')
+    net.mobility('sta1', 'stop', time=60, position='50,20,0')
+    net.mobility('sta2', 'start', time=0, position='0,60,0')
+    net.mobility('sta2', 'stop', time=60, position='30,10,0')
+    net.stopMobility(stopTime=60)
 
     print "*** Running CLI"
     CLI( net )
