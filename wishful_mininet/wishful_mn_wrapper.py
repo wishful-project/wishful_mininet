@@ -2,6 +2,8 @@
 Wishful Mininet integration
 """
 
+import logging
+
 __author__ = "Zubow"
 __copyright__ = "Copyright (c) 2016, Technische Universität Berlin"
 __version__ = "0.1.0"
@@ -12,6 +14,9 @@ class WishfulNode( object ):
     """A Wishful node is either a Wishful agent or controller."""
 
     def __init__( self, network_node, script, config, verbose, logfile ):
+        self.log = logging.getLogger("{module}.{name}".format(
+            module=self.__class__.__module__, name=self.__class__.__name__))
+
         self.network_node = network_node
         self.script = script
         self.config = config
@@ -20,6 +25,8 @@ class WishfulNode( object ):
         self.ctrl_ip = '127.0.0.1'
         self.ctrl_dl_port = 8989
         self.ctrl_ul_port = 8990
+
+        self.log.info('Starting Wishful script: %s / %s' % (self.script, self.config))
 
     def start( self ):
         """Start agent or controller.
