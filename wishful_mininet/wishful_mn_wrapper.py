@@ -66,6 +66,11 @@ class WishfulNode( object ):
       else:
         return True
 
+    def read_log_file( self ):
+        fid = open(self.logfile)
+        content = fid.read()
+
+        return content
 
 class WishfulAgent( WishfulNode ):
     """The Wishful agent which is running on each wireless node to be controlled."""
