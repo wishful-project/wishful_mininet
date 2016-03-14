@@ -3,6 +3,9 @@ Wishful Mininet integration
 """
 
 import logging
+import os
+import subprocess
+import re
 
 __author__ = "Zubow"
 __copyright__ = "Copyright (c) 2016, Technische Universität Berlin"
@@ -46,23 +49,22 @@ class WishfulNode( object ):
         self.network_node.cmd( 'kill %' + self.script )
         self.network_node.cmd( 'wait %' + self.script )
 
-    def checkListening( self ):
-        """Make sure no controllers are running on our port"""
-        # Verify that Telnet is installed first:
-        out, _err, returnCode = errRun( "which telnet" )
-        if 'telnet' not in out or returnCode != 0:
-            raise Exception( "Error running telnet to check for listening "
-                             "controllers; please check that it is "
-                             "installed." )
-        listening = self.cmd( "echo A | telnet -e A %s %d" %
-                              ( self.ctrl_ip, self.ctrl_dl_port ) )
-        if 'Connected' in listening:
-            servers = self.cmd( 'netstat -natp' ).split( '\n' )
-            pstr = ':%d ' % self.ctrl_dl_port
-            clist = servers[ 0:1 ] + [ s for s in servers if pstr in s ]
-            raise Exception( "Please shut down the controller which is"
-                                     " running on port %d:\n" % self.ctrl_dl_port +
-                                     '\n'.join( clist ) )
+    def find_process( self, process_name ):
+      ps = subprocess.Popen("ps -eaf | grep -v grep | grep " + process_name, shell=True, stdout=subprocess.PIPE)
+      output = ps.stdout.read()
+      ps.stdout.close()
+      ps.wait()
+
+      return output
+
+    # This is the function you can use
+    def check_is_running( self ):
+      output = self.find_process( self.script )
+
+      if re.search(self.script, output) is None:
+        return False
+      else:
+        return True
 
 
 class WishfulAgent( WishfulNode ):
