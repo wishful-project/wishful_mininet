@@ -1,1 +1,1 @@
-from wishful_mn_wrapper import *
+from .wishful_mn_wrapper import *
