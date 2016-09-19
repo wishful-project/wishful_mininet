@@ -82,11 +82,11 @@ class WishfulAgent( WishfulNode ):
         #self.checkListening()
 
     def start( self ):
-        print("Start Wishful agent.")
+        self.log.info("Start Wishful agent.")
         WishfulNode.start(self)
 
     def stop( self ):
-        print("Stop Wishful agent.")
+        self.log.info("Stop Wishful agent.")
         WishfulNode.stop(self)
 
 class WishfulController( WishfulNode ):
@@ -99,9 +99,9 @@ class WishfulController( WishfulNode ):
         #self.checkListening()
 
     def start( self ):
-        print("Start Wishful controller.")
+        self.log.info("Start Wishful controller.")
         WishfulNode.start(self)
 
     def stop( self ):
-        print("Stop Wishful controller.")
+        self.log.info("Stop Wishful controller.")
         WishfulNode.stop(self)
