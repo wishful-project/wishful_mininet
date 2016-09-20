@@ -8,7 +8,7 @@ import subprocess
 import re
 
 __author__ = "Zubow"
-__copyright__ = "Copyright (c) 2016, Technische Universität Berlin"
+__copyright__ = "Copyright (c) 2016, Technische Universitaet Berlin"
 __version__ = "0.1.0"
 __email__ = "{zubow}@tkn.tu-berlin.de"
 
@@ -36,7 +36,7 @@ class WishfulNode( object ):
            Log to /tmp/*.log"""
 
         if self.verbose:
-            verbose_str = '--verbose'
+            verbose_str = '-v'
         else:
             verbose_str = ''
         # exec on network node
