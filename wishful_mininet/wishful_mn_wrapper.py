@@ -16,33 +16,32 @@ __email__ = "{zubow}@tkn.tu-berlin.de"
 class WishfulNode( object ):
     """A Wishful node is either a Wishful agent or controller."""
 
-    def __init__( self, network_node, config, verbose, logfile ):
+    def __init__( self, network_node, config, logfile ):
         self.log = logging.getLogger("{module}.{name}".format(
             module=self.__class__.__module__, name=self.__class__.__name__))
 
         self.network_node = network_node
         self.config = config
-        self.verbose = verbose
         self.logfile = logfile
-        self.ctrl_ip = '127.0.0.1'
-        self.ctrl_dl_port = 8989
-        self.ctrl_ul_port = 8990
+        if logfile is None:
+            logfile = '/tmp/wishful_' + network_node.name + '.log'
+        else:
+            self.logfile = logfile
+
         self.script = 'wishful-agent'
 
-        self.log.info('Starting Wishful agent with config: %s' % (self.config))
+        print('Starting Wishful agent with config: %s' % (self.config))
 
     def start( self ):
         """Start agent or controller.
            Log to /tmp/*.log"""
 
-        if self.verbose:
-            verbose_str = '-v'
-        else:
-            verbose_str = ''
         # exec on network node
-        self.network_node.cmd( self.script + ' ' + verbose_str + ' --logfile ' + self.logfile + 
-        ' --config ' + self.config + ' &' )
-        self.execed = False
+        try:
+            self.network_node.cmd( self.script + ' --config ' + self.config + ' 2>&1  > ' + self.logfile + ' &' )
+            self.execed = False
+        except Exception as e:
+            print("{} !!!Exception!!!: {}".format(datetime.datetime.now(), e))
 
     def stop( self ):
         """Stop controller."""
@@ -71,37 +70,3 @@ class WishfulNode( object ):
         content = fid.read()
 
         return content
-
-class WishfulAgent( WishfulNode ):
-    """The Wishful agent which is running on each wireless node to be controlled."""
-
-    def __init__( self, network_node, config, verbose=False, logfile=None ):
-        if logfile is None:
-            logfile = '/tmp/agent_' + network_node.name + '.log'
-        WishfulNode.__init__( self, network_node, config, verbose, logfile )
-        #self.checkListening()
-
-    def start( self ):
-        self.log.info("Start Wishful agent.")
-        WishfulNode.start(self)
-
-    def stop( self ):
-        self.log.info("Stop Wishful agent.")
-        WishfulNode.stop(self)
-
-class WishfulController( WishfulNode ):
-    """The Wishful controller which is communicating with Wishful agents in order to control wireless nodes."""
-
-    def __init__( self, network_node, config, verbose=False, logfile=None ):
-        if logfile is None:
-            logfile = '/tmp/controller_' + network_node.name + '.log'
-        WishfulNode.__init__( self, network_node, config, verbose, logfile )
-        #self.checkListening()
-
-    def start( self ):
-        self.log.info("Start Wishful controller.")
-        WishfulNode.start(self)
-
-    def stop( self ):
-        self.log.info("Stop Wishful controller.")
-        WishfulNode.stop(self)
