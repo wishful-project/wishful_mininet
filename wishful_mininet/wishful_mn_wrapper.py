@@ -16,7 +16,7 @@ __email__ = "{zubow}@tkn.tu-berlin.de"
 class WishfulNode( object ):
     """A Wishful node is either a Wishful agent or controller."""
 
-    def __init__( self, network_node, config, logfile ):
+    def __init__( self, network_node, config, logfile, verbose=False ):
         self.log = logging.getLogger("{module}.{name}".format(
             module=self.__class__.__module__, name=self.__class__.__name__))
 
@@ -28,9 +28,10 @@ class WishfulNode( object ):
         else:
             self.logfile = logfile
 
+        self.verbose = verbose
         self.script = 'wishful-agent'
 
-        print('Starting Wishful agent with config: %s' % (self.config))
+        print('Starting Wishful agent with config: %s and logfile: %s' % (self.config, self.logfile))
 
     def start( self ):
         """Start agent or controller.
@@ -38,13 +39,19 @@ class WishfulNode( object ):
 
         # exec on network node
         try:
-            self.network_node.cmd( self.script + ' --config ' + self.config + ' 2>&1  > ' + self.logfile + ' &' )
+            if self.verbose:
+                verbose_str = '-v'
+            else:
+                verbose_str = ''
+
+            self.network_node.cmd( self.script + ' ' + verbose_str + ' --logfile ' + self.logfile + ' --config ' + self.config + ' &' )
             self.execed = False
         except Exception as e:
             print("{} !!!Exception!!!: {}".format(datetime.datetime.now(), e))
 
     def stop( self ):
-        """Stop controller."""
+        """Stop wishful node."""
+        print('Stopping Wishful agent')
         self.network_node.cmd( 'kill %' + self.script )
         self.network_node.cmd( 'wait %' + self.script )
 
